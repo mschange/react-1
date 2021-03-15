@@ -28,6 +28,8 @@ if (__DEV__) {
   didWarnAboutStringRefs = {};
 }
 
+
+// 判断config是否含义ref
 function hasValidRef(config) {
   if (__DEV__) {
     if (hasOwnProperty.call(config, 'ref')) {
@@ -131,53 +133,45 @@ function warnIfStringRefCannotBeAutoConverted(config) {
  * will not work. Instead test $$typeof field against Symbol.for('react.element') to check
  * if something is a React Element.
  *
- * @param {*} type
- * @param {*} props
- * @param {*} key
+ * 工厂方法来创建新的React元素。这不再符合类模式，所以不要使用new来调用它。还有，检查实例
+   不起作用。而是对$$typeof字段进行测试符号.for('反应元素）进行检查
+
+ * @param {type为标签名称*} type
+ * @param {props自定义的属性、方法，注意：props.children=childArray*} props
+ * @param {key为null*} key
  * @param {string|object} ref
  * @param {*} owner
- * @param {*} self A *temporary* helper to detect places where `this` is
- * different from the `owner` when React.createElement is called, so that we
- * can warn. We want to get rid of owner and replace string `ref`s with arrow
- * functions, and as long as `this` and owner are the same, there will be no
- * change in behavior.
- * @param {*} source An annotation object (added by a transpiler or otherwise)
- * indicating filename, line number, and/or other information.
+ * @param {null*} self
+ * @param {null*} source
  * @internal
  */
 const ReactElement = function(type, key, ref, self, source, owner, props) {
   const element = {
-    // This tag allows us to uniquely identify this as a React Element
+    // 这个标签允许我们唯一地将其标识为React元素
     $$typeof: REACT_ELEMENT_TYPE,
 
-    // Built-in properties that belong on the element
+    // 属于元素的内置属性
     type: type,
     key: key,
     ref: ref,
     props: props,
 
-    // Record the component responsible for creating this element.
+    // 记录负责创建此元素的组件。
     _owner: owner,
   };
 
   if (__DEV__) {
-    // The validation flag is currently mutative. We put it on
-    // an external backing store so that we can freeze the whole object.
-    // This can be replaced with a WeakMap once they are implemented in
-    // commonly used development environments.
     element._store = {};
-
-    // To make comparing ReactElements easier for testing purposes, we make
-    // the validation flag non-enumerable (where possible, which should
-    // include every environment we run tests in), so the test framework
-    // ignores it.
+    /**
+     * 为了便于测试验证标志不可枚举（如果可能，应该包括我们运行测试的每个环境），可以忽略
+     */
     Object.defineProperty(element._store, 'validated', {
       configurable: false,
       enumerable: false,
       writable: true,
       value: false,
     });
-    // self and source are DEV only properties.
+    // self和source是仅适用于开发人员的属性
     Object.defineProperty(element, '_self', {
       configurable: false,
       enumerable: false,
@@ -347,17 +341,26 @@ export function jsxDEV(type, config, maybeKey, source, self) {
  * Create and return a new ReactElement of the given type.
  * See https://reactjs.org/docs/react-api.html#createelement
  */
+/**
+ * createElement()负责生成虚拟
+ * @param {type接受的是标签名称*} type
+ * @param {config接受的是包含的props，style，class等*} config
+ * @param {children 子节点的VNode对象 || 父元素的文本内容*} children
+ * @returns
+ */
 export function createElement(type, config, children) {
   let propName;
 
   // Reserved names are extracted
   const props = {};
 
+  // 对于关键字处理
   let key = null;
   let ref = null;
   let self = null;
   let source = null;
 
+  // 判断config是否有值
   if (config != null) {
     if (hasValidRef(config)) {
       ref = config.ref;
@@ -383,13 +386,16 @@ export function createElement(type, config, children) {
     }
   }
 
-  // Children can be more than one argument, and those are transferred onto
-  // the newly allocated props object.
+  // 对于children的处理，形参
   const childrenLength = arguments.length - 2;
+  // length为1的情况，直接赋值
   if (childrenLength === 1) {
     props.children = children;
+    // 大于1，进行循环赋值
   } else if (childrenLength > 1) {
+    // 新建数组长度为childrenLength的数组
     const childArray = Array(childrenLength);
+    // 循环并赋值
     for (let i = 0; i < childrenLength; i++) {
       childArray[i] = arguments[i + 2];
     }
@@ -398,10 +404,11 @@ export function createElement(type, config, children) {
         Object.freeze(childArray);
       }
     }
+    // 最终把得到的childArray赋值给props点children
     props.children = childArray;
   }
 
-  // Resolve default props
+  // 是否存在默认的defaultProps
   if (type && type.defaultProps) {
     const defaultProps = type.defaultProps;
     for (propName in defaultProps) {
@@ -424,6 +431,7 @@ export function createElement(type, config, children) {
       }
     }
   }
+  // 调用ReactElement方法，把处理的参数传递进去
   return ReactElement(
     type,
     key,

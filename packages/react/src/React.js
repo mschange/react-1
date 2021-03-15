@@ -21,18 +21,24 @@ import {
 } from 'shared/ReactSymbols';
 
 import {Component, PureComponent} from './ReactBaseClasses';
+// 导出的是创建ref
 import {createRef} from './ReactCreateRef';
+// 导出的是this.props.children的五个方法
 import {forEach, map, count, toArray, only} from './ReactChildren';
+// 导出的是createElement，createFactory，cloneElement方法
 import {
   createElement as createElementProd,
   createFactory as createFactoryProd,
   cloneElement as cloneElementProd,
   isValidElement,
 } from './ReactElement';
+// 导出的是createContext，创建上下文content
 import {createContext} from './ReactContext';
 import {lazy} from './ReactLazy';
+// 导出的也是创建ref的另一种形式
 import {forwardRef} from './ReactForwardRef';
 import {memo} from './ReactMemo';
+// 导出react的hooks相关
 import {
   getCacheForType,
   useCallback,
@@ -65,6 +71,9 @@ const createElement = __DEV__ ? createElementWithValidation : createElementProd;
 const cloneElement = __DEV__ ? cloneElementWithValidation : cloneElementProd;
 const createFactory = __DEV__ ? createFactoryWithValidation : createFactoryProd;
 
+/**
+ * children提供了map，forEach，cout，toArray，only等方法
+ */
 const Children = {
   map,
   forEach,
