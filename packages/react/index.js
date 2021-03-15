@@ -34,37 +34,57 @@ export type Interaction = {
   ...
 };
 
-// Export all exports so that they're available in tests.
-// We can't use export * from in Flow for some reason.
+// react抛出来的方法
 export {
+  // this.props.children
   Children,
+  // 创建ref
   createRef,
+  // 组件
   Component,
+  // 组件
   PureComponent,
+  // 创建上下文
   createContext,
+  // 创建ref
   forwardRef,
   lazy,
   memo,
+  // hooks里面的useCallback
   useCallback,
+  // hooks里面创建上下文
   useContext,
+  // hooks创建useEffect
   useEffect,
   useImperativeHandle,
   useDebugValue,
   useLayoutEffect,
+  // hooks
   useMemo,
+  // hooks
   useReducer,
+  // hooks
   useRef,
+  // hooks
   useState,
   useMutableSource,
   useMutableSource as unstable_useMutableSource,
   createMutableSource,
   createMutableSource as unstable_createMutableSource,
+  // 空标签
+  /**
+   * <>
+   *  <p>这就是Fragment</p>
+   * </>
+   */
   Fragment,
   Profiler,
   unstable_DebugTracingMode,
   StrictMode,
   Suspense,
+  // React.createElement()负责生成虚拟domReactDOM.render()将虚拟dom转化为真实dom
   createElement,
+  // 克隆组件
   cloneElement,
   isValidElement,
   version,
