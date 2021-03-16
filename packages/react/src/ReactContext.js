@@ -11,14 +11,19 @@ import {REACT_PROVIDER_TYPE, REACT_CONTEXT_TYPE} from 'shared/ReactSymbols';
 
 import type {ReactContext} from 'shared/ReactTypes';
 
+// 暴露出去的createContext
 export function createContext<T>(
+  // 默认值
   defaultValue: T,
+  // calculateChangedBits方法,使用Object.is()计算新老context变化
   calculateChangedBits: ?(a: T, b: T) => number,
 ): ReactContext<T> {
+  // 如果不存在，则置为null
   if (calculateChangedBits === undefined) {
     calculateChangedBits = null;
   } else {
     if (__DEV__) {
+      // 生产环境如果calculateChangedBits存在并且它不是function，则抛出错误
       if (
         calculateChangedBits !== null &&
         typeof calculateChangedBits !== 'function'
@@ -40,15 +45,22 @@ export function createContext<T>(
     // there to be two concurrent renderers at most: React Native (primary) and
     // Fabric (secondary); React DOM (primary) and React ART (secondary).
     // Secondary renderers store their context values on separate fields.
+    /**
+     * 作为支持多个并发渲染器的解决方案，我们将其归类为一些渲染器作为主渲染器，其他渲染器作为辅助渲染器
+     * 最多有两个并发呈现器：React Native（primary）和 次要
+     * React DOM（主要）和React ART（次要）
+     * 二级渲染器将其上下文值存储在单独的字段中
+     */
     _currentValue: defaultValue,
     _currentValue2: defaultValue,
     // Used to track how many concurrent renderers this context currently
     // supports within in a single renderer. Such as parallel server rendering.
     _threadCount: 0,
     // These are circular
-    Provider: (null: any),
-    Consumer: (null: any),
+    Provider: (null: any), // 传递值的组件
+    Consumer: (null: any), // 接收值的组件
   };
+
 
   context.Provider = {
     $$typeof: REACT_PROVIDER_TYPE,
@@ -147,6 +159,6 @@ export function createContext<T>(
     context._currentRenderer = null;
     context._currentRenderer2 = null;
   }
-
+  // 返回context对象
   return context;
 }
